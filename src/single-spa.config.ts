@@ -26,7 +26,7 @@ export default function singleSpaConfig(app: Application) {
   /**
    * @description 定义子应用变量
    */
-  const app1Path = 'single-spa-app-vue3-vite-template';
+  const appPath1 = 'single-spa-app-vue3-vite-template';
   const appProps: SingleSpaAppProps = reactive({ userAuth: null });
   const appPathInfo: SingleSpaRootPath = { rootPath: getAppPathInfo() };
 
@@ -48,14 +48,23 @@ export default function singleSpaConfig(app: Application) {
   /**
    * @description 注册 SingleSpa 子应用
    */
-  registerApplication({
-    name: 'single-spa-app-vue3-vite-template',
-    // @ts-ignore
-    // app: () => import(/* webpackIgnore: true */ 'http://localhost:8081/js/app.js'),
-    app: () => window.System.import('@app/single-spa-app-vue3-vite-template'),
-    activeWhen: app1Path,
-    customProps: { parcelProps: appProps },
-  });
+  try {
+    console.log(process.env.VUE_APP_NAME1);
+    console.log(process.env.VUE_APP_ENTRY1);
+    registerApplication({
+      name: process.env.VUE_APP_NAME1,
+      app: () => window.System.import(process.env.VUE_APP_ENTRY1),
+      activeWhen: appPath1,
+      customProps: { parcelProps: appProps },
+    });
+  } catch (e) {
+    registerApplication({
+      name: import.meta.env.VITE_APP_NAME1,
+      app: () => import(/* @vite-ignore */ import.meta.env.VITE_APP_ENTRY1),
+      activeWhen: appPath1,
+      customProps: { parcelProps: appProps },
+    });
+  }
 
   /**
    * @description 监听子项目挂载事件，停止 Loading 状态
@@ -79,8 +88,8 @@ export default function singleSpaConfig(app: Application) {
   (async function () {
     try {
       appLoading.value = true;
-      // 对于特定子应用，执行 ajax 请求 (其他不需要网络请求的子应用，不需要特殊处理)
-      if (app1Path === appPathInfo.rootPath) {
+      // 对于特定子应用，执行网络请求 (其他不需要网络请求的子应用，不需要特殊处理)
+      if (appPath1 === appPathInfo.rootPath) {
         appProps.userAuth = await getAppUserAuth();
       }
       // 启动子应用

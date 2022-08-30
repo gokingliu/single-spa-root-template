@@ -9,22 +9,19 @@
     <!-- 引入 system.js 相关文件 -->
     <script src="/libs/systemjs/system.min.js"></script>
     <script src="/libs/systemjs/extras/amd.min.js"></script>
-    <!-- 引入 import map 表 -->
-    <meta name="importmap-type" content="systemjs-importmap">
-    <script type="systemjs-importmap"><%= htmlWebpackPlugin.options.importMap %></script>
     <!-- 内容安全策略 -->
     <meta
       http-equiv="Content-Security-Policy"
       content="
-          default-src 'self' https: <%= htmlWebpackPlugin.options.contentSecurityPolicy %>;
-          connect-src http: https: ws:;
-          script-src 'unsafe-inline' 'unsafe-eval' https: <%= htmlWebpackPlugin.options.contentSecurityPolicy %>;
-          style-src 'unsafe-inline' *.com;
-          object-src 'none';
-          font-src data: *.com;
-          img-src http: https: data:;
-          media-src http: https: data:;
-        "
+        default-src 'self' https: http:;
+        connect-src http: https: ws:;
+        script-src 'unsafe-inline' 'unsafe-eval' https: http:;
+        style-src 'unsafe-inline' *.com;
+        object-src 'none';
+        font-src data: *.com;
+        img-src http: https: data:;
+        media-src http: https: data:;
+      "
     >
   </head>
   <body>

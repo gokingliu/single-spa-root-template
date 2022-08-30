@@ -1,4 +1,3 @@
-const importMap = require('./config/import-map');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const GzipExtensions = ['js', 'html', 'css', 'svg', 'png'];
 const isDev = process.env.NODE_ENV === 'development';
@@ -19,13 +18,6 @@ module.exports = {
     }
   },
   chainWebpack: (config) => {
-    config.plugin('html').tap((args) => {
-      const map = { imports: {} };
-      importMap.forEach((item) => (map.imports[item.name] = item.entry));
-      args[0].importMap = JSON.stringify(map, null, 2);
-      args[0].contentSecurityPolicy = isDev ? 'http:' : '';
-      return args;
-    });
     // 清空生产环境控制台日志 (保留 console.error)
     if (!isDev) {
       config.optimization.minimizer('terser').tap((args) => {

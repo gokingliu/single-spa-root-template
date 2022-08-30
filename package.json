@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "vite": "vite",
+    "webpack": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build:analyzer": "vue-cli-service build --mode analyzer",
     "lint": "vue-cli-service lint",
-    "serve:standalone": "vue-cli-service serve --mode standalone",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -18,15 +17,18 @@
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "@gokingliu/eslint-config": "^1.0.2",
+    "@gokingliu/eslint-config": "^1.0.3",
     "@iconify-json/ep": "^1.1.7",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
+    "@vitejs/plugin-vue": "^3.0.1",
+    "@vitejs/plugin-vue-jsx": "^2.0.0",
     "@vue/cli-plugin-babel": "~5.0.8",
     "@vue/cli-plugin-eslint": "~5.0.8",
     "@vue/cli-plugin-typescript": "~5.0.8",
     "@vue/cli-service": "~5.0.8",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.0",
+    "@vue/tsconfig": "^0.1.3",
     "commitizen": "^4.2.5",
     "compression-webpack-plugin": "^10.0.0",
     "cz-customizable": "^6.9.1",
@@ -37,9 +39,8 @@
     "sass": "^1.54.4",
     "sass-loader": "^13.0.2",
     "typescript": "~4.7.4",
-    "unplugin-auto-import": "^0.10.3",
-    "unplugin-icons": "^0.14.8",
-    "unplugin-vue-components": "^0.22.0"
+    "vite": "^3.0.4",
+    "vite-plugin-checker": "^0.4.9"
   },
   "config": {
     "commitizen": {

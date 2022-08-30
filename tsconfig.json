@@ -18,8 +18,6 @@
     "types": [
       "webpack-env",
       "vite/client",
-      "element-plus/global",
-      "unplugin-icons/types/vue",
     ],
     "paths": { "@/*": ["src/*"] },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
