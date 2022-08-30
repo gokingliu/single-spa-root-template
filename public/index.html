@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <!-- 引入 system.js 相关文件 -->
+    <script src="/libs/systemjs/system.min.js"></script>
+    <script src="/libs/systemjs/extras/amd.min.js"></script>
+    <!-- 引入 import map 表 -->
+    <meta name="importmap-type" content="systemjs-importmap">
+    <script type="systemjs-importmap"><%= htmlWebpackPlugin.options.importMap %></script>
+    <!-- 内容安全策略 -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+          default-src 'self' https: <%= htmlWebpackPlugin.options.contentSecurityPolicy %>;
+          connect-src http: https: ws:;
+          script-src 'unsafe-inline' 'unsafe-eval' https: <%= htmlWebpackPlugin.options.contentSecurityPolicy %>;
+          style-src 'unsafe-inline' *.com;
+          object-src 'none';
+          font-src data: *.com;
+          img-src http: https: data:;
+          media-src http: https: data:;
+        "
+    >
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="root"></div>
+  </body>
+</html>
