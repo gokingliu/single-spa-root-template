@@ -49,8 +49,6 @@ export default function singleSpaConfig(app: Application) {
    * @description 注册 SingleSpa 子应用
    */
   try {
-    console.log(process.env.VUE_APP_NAME1);
-    console.log(process.env.VUE_APP_ENTRY1);
     registerApplication({
       name: process.env.VUE_APP_NAME1,
       app: () => window.System.import(process.env.VUE_APP_ENTRY1),
