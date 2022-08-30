@@ -1,7 +1,7 @@
 <template>
   <nav class="base-menu">
     <template v-for="item in menuConf" :key="item.path">
-      <a :class="{ active: curMenu.includes(item.path) }" :href="`/${item.path}`" @click="curMenu = item.path">
+      <a :class="{ active: curMenu.includes(item.path) }" :href="`/${item.path}/`" @click="curMenu = item.path">
         {{ item.name }}
       </a>
     </template>
@@ -21,13 +21,14 @@ export default defineComponent({
      */
     const data = reactive({
       menuConf: menuConf as MenuConfItem[],
-      curMenu: location.pathname,
+      curMenu: location.pathname as string,
     });
 
     /**
      * 监听hash变化
      */
-    window.onhashchange = () => {
+    window.onhashchange = (err) => {
+      console.log(err);
       data.curMenu = location.pathname;
     };
 
@@ -43,8 +44,8 @@ export default defineComponent({
   display: flex;
   flex-shrink: 0;
   flex-direction: column;
-  width: 210px;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   padding: 30px 0;
   box-shadow: 3px 0 9px 2px #e6e6e6;
   background-color: #fff;

@@ -1,10 +1,10 @@
 export const menuConf = [
   {
-    path: 'workbench',
-    name: '工作台',
+    path: 'single-spa-app-vue3-vite-template',
+    name: 'vue3-vite',
   },
   {
-    path: 'image',
-    name: '图 片',
+    path: 'single-spa-app-vue3-webpack-template',
+    name: 'vue3-webpack',
   },
 ];

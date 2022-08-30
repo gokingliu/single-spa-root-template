@@ -19,14 +19,14 @@ export default function singleSpaConfig(app: Application) {
       case 1:
         return paths[0];
       default:
-        return 'image';
+        return 'single-spa-app-vue3-vite-template';
     }
   };
 
   /**
    * @description 定义子应用变量
    */
-  const app1Path = 'image';
+  const app1Path = 'single-spa-app-vue3-vite-template';
   const appProps: SingleSpaAppProps = reactive({ userAuth: null });
   const appPathInfo: SingleSpaRootPath = { rootPath: getAppPathInfo() };
 
@@ -39,7 +39,9 @@ export default function singleSpaConfig(app: Application) {
       return result;
     } catch (e) {
       console.info('[SingleSpa] start error %c%s', 'color: red;', e);
-      return null;
+      // TODO 应返回 null，这里因为是假接口，所以返回了一个 demo 数据
+      // return null;
+      return { addAuth: true, searchAuth: false };
     }
   };
 
@@ -47,8 +49,10 @@ export default function singleSpaConfig(app: Application) {
    * @description 注册 SingleSpa 子应用
    */
   registerApplication({
-    name: '@isec/media',
-    app: () => window.System.import('@isec/media'),
+    name: 'single-spa-app-vue3-vite-template',
+    // @ts-ignore
+    // app: () => import(/* webpackIgnore: true */ 'http://localhost:8081/js/app.js'),
+    app: () => window.System.import('@app/single-spa-app-vue3-vite-template'),
     activeWhen: app1Path,
     customProps: { parcelProps: appProps },
   });

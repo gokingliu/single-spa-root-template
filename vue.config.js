@@ -4,7 +4,6 @@ const GzipExtensions = ['js', 'html', 'css', 'svg', 'png'];
 const isDev = process.env.NODE_ENV === 'development';
 
 module.exports = {
-  filenameHashing: false,
   configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
       // 生产环境开启 gzip 压缩
@@ -20,8 +19,6 @@ module.exports = {
     }
   },
   chainWebpack: (config) => {
-    // 非入口文件名添加 hash 值
-    config.output.chunkFilename('js/[name].[chunkhash].js').end();
     config.plugin('html').tap((args) => {
       const map = { imports: {} };
       importMap.forEach((item) => (map.imports[item.name] = item.entry));
