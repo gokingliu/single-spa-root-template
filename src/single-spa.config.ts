@@ -60,6 +60,7 @@ export default function singleSpaConfig(app: Application) {
       name: process.env.VUE_APP_NAME2,
       app: () => window.System.import(process.env.VUE_APP_ENTRY2),
       activeWhen: appPath2,
+      customProps: { parcelProps: appProps },
     });
     // 请注意，如果使用 SystemJS 加载应用，则需要添加以下代码，为了使 SystemJS 加载出错时重新尝试网络请求
     addErrorHandler((err) => {
@@ -78,6 +79,7 @@ export default function singleSpaConfig(app: Application) {
       name: import.meta.env.VITE_APP_NAME2,
       app: () => import(/* @vite-ignore */ import.meta.env.VITE_APP_ENTRY2),
       activeWhen: appPath2,
+      customProps: { parcelProps: appProps },
     });
   }
 
@@ -96,6 +98,9 @@ export default function singleSpaConfig(app: Application) {
       appLoading.value = true;
       // 对于特定子应用，执行网络请求 (其他不需要网络请求的子应用，不需要特殊处理)
       if (appPath1 === appPathInfo.rootPath) {
+        appProps.userAuth = await getAppUserAuth();
+      }
+      if (appPath2 === appPathInfo.rootPath) {
         appProps.userAuth = await getAppUserAuth();
       }
       // 启动子应用
