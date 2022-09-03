@@ -55,6 +55,12 @@ export default function singleSpaConfig(app: Application) {
       activeWhen: appPath1,
       customProps: { parcelProps: appProps },
     });
+    // 请注意，如果使用 SystemJS 加载应用，则需要添加以下代码，为了使 SystemJS 加载出错时重新尝试网络请求
+    addErrorHandler((err) => {
+      if (getAppStatus(err.appOrParcelName) === LOAD_ERROR) {
+        window.System?.delete(window.System.resolve(err.appOrParcelName));
+      }
+    });
   } catch (e) {
     registerApplication({
       name: import.meta.env.VITE_APP_NAME1,
@@ -69,15 +75,6 @@ export default function singleSpaConfig(app: Application) {
    */
   window.addEventListener('single-spa:first-mount', () => {
     appLoading.value = false;
-  });
-
-  /**
-   * @description 请注意，如果使用 SystemJS 加载应用，则需要添加以下代码，为了使 SystemJS 加载出错时重新尝试网络请求
-   */
-  addErrorHandler((err) => {
-    if (getAppStatus(err.appOrParcelName) === LOAD_ERROR) {
-      window.System?.delete(window.System.resolve(err.appOrParcelName));
-    }
   });
 
   /**
