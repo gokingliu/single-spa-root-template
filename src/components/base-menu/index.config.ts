@@ -4,7 +4,7 @@ export const menuConf = [
     name: 'vue3-vite',
   },
   {
-    path: 'single-spa-app-vue3-webpack-template',
+    path: 'single-spa-app-vue3-webpack5-template',
     name: 'vue3-webpack',
   },
 ];
