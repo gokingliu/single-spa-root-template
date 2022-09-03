@@ -27,6 +27,7 @@ export default function singleSpaConfig(app: Application) {
    * @description 定义子应用变量
    */
   const appPath1 = 'single-spa-app-vue3-vite-template';
+  const appPath2 = 'single-spa-app-vue3-webpack5-template';
   const appProps: SingleSpaAppProps = reactive({ userAuth: null });
   const appPathInfo: SingleSpaRootPath = { rootPath: getAppPathInfo() };
 
@@ -55,6 +56,11 @@ export default function singleSpaConfig(app: Application) {
       activeWhen: appPath1,
       customProps: { parcelProps: appProps },
     });
+    registerApplication({
+      name: process.env.VUE_APP_NAME2,
+      app: () => window.System.import(process.env.VUE_APP_ENTRY2),
+      activeWhen: appPath2,
+    });
     // 请注意，如果使用 SystemJS 加载应用，则需要添加以下代码，为了使 SystemJS 加载出错时重新尝试网络请求
     addErrorHandler((err) => {
       if (getAppStatus(err.appOrParcelName) === LOAD_ERROR) {
@@ -67,6 +73,11 @@ export default function singleSpaConfig(app: Application) {
       app: () => import(/* @vite-ignore */ import.meta.env.VITE_APP_ENTRY1),
       activeWhen: appPath1,
       customProps: { parcelProps: appProps },
+    });
+    registerApplication({
+      name: import.meta.env.VITE_APP_NAME2,
+      app: () => import(/* @vite-ignore */ import.meta.env.VITE_APP_ENTRY2),
+      activeWhen: appPath2,
     });
   }
 
