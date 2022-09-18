@@ -1,0 +1,68 @@
+name: Deploy Single-Spa Root App
+
+# 触发条件
+on:
+  push:
+    branches: [ "master", "release", "dev" ]
+
+# 环境变量
+env:
+  ROOT_STATIC_PATH: /root/single_spa # 部署服务器，主应用资源路径
+  ROOT_PATH: single-spa-root-template # Github Actions 主应用代码路径
+  DIST_NAME: dist-${{ github.run_number }}.zip
+  SOURCE_DIST: dist/dist-${{ github.run_number }}.zip
+
+jobs:
+  # 构建、部署主应用
+  build-root:
+    runs-on: ubuntu-latest
+    
+    # 步骤
+    steps:
+    # 拉取代码
+    - uses: actions/checkout@v3
+
+    # 设置 node 环境
+    - name: Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+
+    # 构建
+    - name: Build
+      run: |
+        echo '${{ toJSON(github.ref) }}'
+        echo '${{ toJSON(github.ref_name) }}'
+        echo '${{ toJSON(github.run_number) }}'
+        npm install # 安装 node modules
+        npm run build # 打包
+        cd dist # 进入静态资源目录
+        rm -f ${{ DIST_NAME }} # 删除之前存在的压缩文件
+        zip -r ${{ DIST_NAME }} * # 压缩
+    
+    # 上传静态资源
+    - name: Upload
+      uses: easingthemes/ssh-deploy@main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.KEY }}
+        ARGS: '-rltgoDzvO --delete'
+        SOURCE: ${{ SOURCE_DIST }}
+        REMOTE_HOST: ${{ secrets.HOST }}
+        REMOTE_USER: ${{ secrets.USERNAME }}
+        TARGET: ${{ ROOT_STATIC_PATH }}
+
+    # 解压静态资源
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd ${{ ROOT_STATIC_PATH }}
+          unzip ${{ DIST_NAME }}
+          rm -f ${{ DIST_NAME }}
+          
+
+        
