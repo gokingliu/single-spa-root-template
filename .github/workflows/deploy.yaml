@@ -36,8 +36,8 @@ jobs:
         npm install # 安装 node modules
         npm run build # 打包
         cd dist # 进入静态资源目录
-        rm -f ${DIST_NAME} # 删除之前存在的压缩文件
-        zip -r ${DIST_NAME} * # 压缩
+        rm -f ${env.DIST_NAME} # 删除之前存在的压缩文件
+        zip -r ${env.DIST_NAME} * # 压缩
 
   # 上传并部署主应用-生产环境
   deploy-root-app:
@@ -52,10 +52,10 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.KEY_PRO }}
         ARGS: '-rltgoDzvO --delete'
-        SOURCE: ${{ SOURCE_DIST }}
+        SOURCE: ${{ env.SOURCE_DIST }}
         REMOTE_HOST: ${{ secrets.HOST_PRO }}
         REMOTE_USER: ${{ secrets.USERNAME_PRO }}
-        TARGET: ${{ ROOT_STATIC_PATH }}
+        TARGET: ${{ env.ROOT_STATIC_PATH }}
 
     # 解压静态资源
     - name: Deploy
@@ -67,7 +67,7 @@ jobs:
         key: ${{ secrets.KEY_PRO }}
         port: ${{ secrets.PORT_PRO }}
         script: |
-          cd ${{ ROOT_STATIC_PATH }}
-          unzip ${{ DIST_NAME }}
-          rm -f ${{ DIST_NAME }}
+          cd ${env.ROOT_STATIC_PATH}
+          unzip ${env.DIST_NAME}
+          rm -f ${env.DIST_NAME}
         
