@@ -54,8 +54,8 @@ jobs:
     # 运行在 Ubuntu 上
     runs-on: ubuntu-latest
     
-    outputs:
-      host: ${{ steps.get_secrets_name.outputs.host }}
+#     outputs:
+#       host: ${{ steps.get_secrets_name.outputs.host }}
     
     # 步骤
     steps:
