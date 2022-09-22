@@ -10,7 +10,7 @@ env:
   ROOT_STATIC_PATH: /root/single_spa # 部署服务器，主应用资源路径
   ROOT_PATH: single-spa-root-template # Github Actions 主应用代码路径
   DIST_NAME: dist-${{ github.run_number }}.zip # 压缩文件名称
-  SOURCE_DIST: dist/dist-${{ github.run_number }}.zip # 压缩文件路径
+  SOURCE_DIST: dist/dist-${{ github.run_number }}.zip # Github Actions 压缩文件路径
 
 # 任务
 jobs:
@@ -51,26 +51,33 @@ jobs:
     
     # 步骤
     steps:
+    # SSH 前置准备
+    - name: Prepare SSH
+      run: |
+        mkdir -p ~/.ssh
+        touch ~/.ssh/known_hosts
+        ssh-keyscan -H '${{ secrets.HOST_PRO }}' >> ~/.ssh/known_hosts
+
     # 上传静态资源
     - name: Upload
       uses: easingthemes/ssh-deploy@main
       env:
-        SSH_PRIVATE_KEY: ${{ secrets.KEY_PRO }}
+        REMOTE_HOST: ${{ secrets.HOST_PRO }} # 部署服务器地址
+        REMOTE_USER: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
+        SSH_PRIVATE_KEY: ${{ secrets.KEY_PRO }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
-        SOURCE: ${{ env.SOURCE_DIST }}
-        REMOTE_HOST: ${{ secrets.HOST_PRO }}
-        REMOTE_USER: ${{ secrets.USERNAME_PRO }}
-        TARGET: ${{ env.ROOT_STATIC_PATH }}
+        SOURCE: ${{ env.SOURCE_DIST }} # Github Actions 压缩文件路径
+        TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
 
     # 解压静态资源
     - name: Deploy
       if: ${{ github.ref_name == 'master' }}
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST_PRO }}
-        username: ${{ secrets.USERNAME_PRO }}
-        key: ${{ secrets.KEY_PRO }}
-        port: ${{ secrets.PORT_PRO }}
+        host: ${{ secrets.HOST_PRO }} # 部署服务器地址
+        username: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
+        key: ${{ secrets.KEY_PRO }} # 部署服务器私钥
+        port: ${{ secrets.PORT_PRO }} # 部署服务器端口
         script: |
           cd ${{ env.ROOT_STATIC_PATH }}
           unzip ${{ env.DIST_NAME }}
