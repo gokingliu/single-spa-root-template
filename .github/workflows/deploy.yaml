@@ -10,7 +10,7 @@ on:
 env:
   ROOT_STATIC_PATH: /root/single_spa # 部署服务器的主应用资源路径
   DIST: dist # Github Actions 压缩文件路径
-  DIST_NAME: dist-${{ github.run_number }}.zip # Github Actions 压缩文件名称
+  DIST_NAME: dist-${{ github.run_number }}.tar # Github Actions 压缩文件名称
   SOURCE_DIST: dist/dist-${{ github.run_number }}.zip # Github Actions 压缩文件全路径
 
 # 任务
@@ -38,14 +38,14 @@ jobs:
         npm run build # 打包
         cd dist # 进入静态资源目录
         rm -f ${{ env.DIST_NAME }} # 删除之前存在的压缩文件
-        zip -r ${{ env.DIST_NAME }} * # 压缩
+        tar -zcf ../${{ env.DIST_NAME }} * # 压缩
     
     # 上传资源，给其他任务使用
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.DIST_NAME }}
-        path: ${{ env.SOURCE_DIST }}
+        path: ${{ env.DIST_NAME }}
 
   # 上传并部署主应用-生产环境
   deploy-root-app-pro:
@@ -62,7 +62,6 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ env.DIST_NAME }}
-        path: ${{ env.DIST }}
 
     # 上传资源到部署服务器
     - name: Upload Host
@@ -72,7 +71,7 @@ jobs:
         REMOTE_USER: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
         SSH_PRIVATE_KEY: ${{ secrets.KEY_PRO }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
-        SOURCE: ${{ env.SOURCE_DIST }} # Github Actions 压缩文件路径
+        SOURCE: ${{ env.DIST_NAME }} # Github Actions 压缩文件路径
         TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
 
     # 解压静态资源
@@ -85,7 +84,7 @@ jobs:
         port: ${{ secrets.PORT_PRO }} # 部署服务器端口
         script: |
           cd ${{ env.ROOT_STATIC_PATH }}
-          unzip ${{ env.DIST_NAME }}
+          tar -zxf ${{ env.DIST_NAME }}
           rm -f ${{ env.DIST_NAME }}
         
   # 上传并部署主应用-测试环境
@@ -103,7 +102,6 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ env.DIST_NAME }}
-        path: ${{ env.DIST }}
 
     # 上传资源到部署服务器
     - name: Upload Host
@@ -113,7 +111,7 @@ jobs:
         REMOTE_USER: ${{ secrets.USERNAME_TEST }} # 部署服务器用户名
         SSH_PRIVATE_KEY: ${{ secrets.KEY_TEST }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
-        SOURCE: ${{ env.SOURCE_DIST }} # Github Actions 压缩文件路径
+        SOURCE: ${{ env.DIST_NAME }} # Github Actions 压缩文件路径
         TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
 
     # 解压静态资源
@@ -126,7 +124,7 @@ jobs:
         port: ${{ secrets.PORT_TEST }} # 部署服务器端口
         script: |
           cd ${{ env.ROOT_STATIC_PATH }}
-          unzip ${{ env.DIST_NAME }}
+          tar -zxf ${{ env.DIST_NAME }}
           rm -f ${{ env.DIST_NAME }}
 
   # 上传并部署主应用-开发环境
@@ -144,7 +142,6 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ env.DIST_NAME }}
-        path: ${{ env.DIST }}
 
     # 上传资源到部署服务器
     - name: Upload Host
@@ -154,7 +151,7 @@ jobs:
         REMOTE_USER: ${{ secrets.USERNAME_DEV }} # 部署服务器用户名
         SSH_PRIVATE_KEY: ${{ secrets.KEY_DEV }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
-        SOURCE: ${{ env.SOURCE_DIST }} # Github Actions 压缩文件路径
+        SOURCE: ${{ env.DIST_NAME }} # Github Actions 压缩文件路径
         TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
 
     # 解压静态资源
@@ -167,5 +164,5 @@ jobs:
         port: ${{ secrets.PORT_DEV }} # 部署服务器端口
         script: |
           cd ${{ env.ROOT_STATIC_PATH }}
-          unzip ${{ env.DIST_NAME }}
+          tar -zxf ${{ env.DIST_NAME }}
           rm -f ${{ env.DIST_NAME }}
