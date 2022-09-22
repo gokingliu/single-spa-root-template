@@ -52,7 +52,10 @@ jobs:
     # 依赖构建任务
     needs: build-root-app
     # 运行在 Ubuntu 上
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
+    
+    outputs:
+      host: ${{ steps.get_secrets_name.outputs.host }}
     
     # 步骤
     steps:
