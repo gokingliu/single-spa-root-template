@@ -72,7 +72,9 @@ jobs:
         value=HOST_${{ github.ref_name }}
         echo "::set-output name=host::${value^^}"
 
-    - run: echo ${{ steps.get_secrets_name.outputs.host }}
+    - run: |
+        echo ${{ steps.get_secrets_name.outputs.host }}
+        echo ${{ secrets[steps.get_secrets_name.outputs.host] }}
     # 上传资源到部署服务器
     - name: Upload Host
       uses: easingthemes/ssh-deploy@main
