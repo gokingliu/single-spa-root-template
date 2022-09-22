@@ -36,11 +36,13 @@ jobs:
         npm install # 安装 node modules
         npm run build # 打包
         cd dist # 进入静态资源目录
-        rm -f ${env.DIST_NAME} # 删除之前存在的压缩文件
-        zip -r ${env.DIST_NAME} * # 压缩
+        rm -f ${{ env.DIST_NAME }} # 删除之前存在的压缩文件
+        zip -r ${{ env.DIST_NAME }} * # 压缩
 
   # 上传并部署主应用-生产环境
   deploy-root-app:
+    # 依赖构建任务
+    needs: build-root-app
     # 运行在 Ubuntu 上
     runs-on: ubuntu-latest 
     
@@ -67,7 +69,7 @@ jobs:
         key: ${{ secrets.KEY_PRO }}
         port: ${{ secrets.PORT_PRO }}
         script: |
-          cd ${env.ROOT_STATIC_PATH}
-          unzip ${env.DIST_NAME}
-          rm -f ${env.DIST_NAME}
+          cd ${{ env.ROOT_STATIC_PATH }}
+          unzip ${{ env.DIST_NAME }}
+          rm -f ${{ env.DIST_NAME }}
         
