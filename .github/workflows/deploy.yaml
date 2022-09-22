@@ -10,7 +10,6 @@ on:
 env:
   ROOT_STATIC_PATH: /root/single_spa # 部署服务器的主应用资源路径
   DIST_NAME: dist-${{ github.run_number }}.tar # Github Actions 压缩文件名称
-  HOST: ${{ secrets['HOST_${github.ref_name^^}'] }}
 
 # 任务
 jobs:
@@ -91,7 +90,7 @@ jobs:
       env:
         HOST: ${{ secrets[steps.get_secrets_name.outputs.host] }}
       with:
-        host: ${{ HOST }} # 部署服务器地址
+        host: ${{ env.HOST }} # 部署服务器地址
         username: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
         key: ${{ secrets.KEY_PRO }} # 部署服务器私钥
         port: ${{ secrets.PORT_PRO }} # 部署服务器端口
