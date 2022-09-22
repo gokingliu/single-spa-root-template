@@ -62,11 +62,17 @@ jobs:
       with:
         name: ${{ env.DIST_NAME }}
 
+    # 根据触发分支选择不同环境的 secrets name
+    - name: Get Secrets Name
+      id: get_secrets_name
+      run: |
+        echo "::set-output name=host::$((${{ github.ref_name }}^^))"
+
     # 上传资源到部署服务器
     - name: Upload Host
       uses: easingthemes/ssh-deploy@main
       env:
-        REMOTE_HOST: ${{ env.HOST }} # 部署服务器地址
+        REMOTE_HOST: ${{ steps.get_secrets_name.outputs.host }} # 部署服务器地址
         REMOTE_USER: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
         SSH_PRIVATE_KEY: ${{ secrets.KEY_PRO }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
