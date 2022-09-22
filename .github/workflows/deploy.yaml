@@ -66,7 +66,7 @@ jobs:
     - name: Upload Host
       uses: easingthemes/ssh-deploy@main
       env:
-        REMOTE_HOST: ${{ secrets.HOST_PRO }} # 部署服务器地址
+        REMOTE_HOST: ${{ env.HOST }} # 部署服务器地址
         REMOTE_USER: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
         SSH_PRIVATE_KEY: ${{ secrets.KEY_PRO }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
