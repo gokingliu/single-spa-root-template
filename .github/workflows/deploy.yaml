@@ -3,7 +3,7 @@ name: Deploy Single-Spa Root App
 # 触发条件
 on:
   push: # master/release/dev 分支更新时
-    branches: [ "master", "release", "dev" ]
+    branches: [ 'master', 'release', 'dev' ]
 
 # 环境变量
 env:
