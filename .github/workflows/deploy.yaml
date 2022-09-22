@@ -45,16 +45,12 @@ jobs:
         name: ${{ env.DIST_NAME }}
         path: ${{ env.DIST_NAME }}
 
-  # 上传并部署主应用-生产环境
-  deploy-root-app-pro:
-    if: ${{ github.ref_name == 'master' }}
+  # 上传并部署主应用
+  deploy-root-app:
     # 依赖构建任务
     needs: build-root-app
     # 运行在 Ubuntu 上
     runs-on: ubuntu-latest
-    
-#     outputs:
-#       host: ${{ steps.get_secrets_name.outputs.host }}
     
     # 步骤
     steps:
@@ -68,18 +64,22 @@ jobs:
     - name: Get Secrets Name
       id: get_secrets_name
       run: |
-        declare -u HOST="HOST_${{ github.ref_name }}"
-        echo "::set-output name=host::${HOST}"
+        declare -u HOST="HOST_${{ github.ref_name }}" # 设置 HOST 变量
+        echo "::set-output name=host::${HOST}"  # 使用 outputs 将变量 host 传递给其他步骤
+        declare -u USERNAME="USERNAME${{ github.ref_name }}" # 设置 USERNAME 变量
+        echo "::set-output name=username::${USERNAME}"  # 使用 outputs 将变量 username 传递给其他步骤
+        declare -u KEY="KEY_${{ github.ref_name }}" # 设置 KEY 变量
+        echo "::set-output name=key::${KEY}"  # 使用 outputs 将变量 key 传递给其他步骤
+        declare -u PORT="PORT_${{ github.ref_name }}" # 设置 PORT 变量
+        echo "::set-output name=port::${PORT}"  # 使用 outputs 将变量 port 传递给其他步骤
 
-    - run: |
-        echo ${{ steps.get_secrets_name.outputs.host }}
     # 上传资源到部署服务器
     - name: Upload Host
       uses: easingthemes/ssh-deploy@main
       env:
         REMOTE_HOST: ${{ secrets[steps.get_secrets_name.outputs.host] }} # 部署服务器地址
-        REMOTE_USER: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
-        SSH_PRIVATE_KEY: ${{ secrets.KEY_PRO }} # 部署服务器私钥
+        REMOTE_USER: ${{ secrets[steps.get_secrets_name.outputs.username] }} # 部署服务器用户名
+        SSH_PRIVATE_KEY: ${{ secrets[steps.get_secrets_name.outputs.key] }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
         SOURCE: ${{ env.DIST_NAME }} # Github Actions 压缩文件路径
         TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
@@ -89,91 +89,14 @@ jobs:
       uses: appleboy/ssh-action@master
       env:
         HOST: ${{ secrets[steps.get_secrets_name.outputs.host] }}
+        USERNAME: ${{ secrets[steps.get_secrets_name.outputs.username] }}
+        KEY: ${{ secrets[steps.get_secrets_name.outputs.key] }}
+        PORT: ${{ secrets[steps.get_secrets_name.outputs.port] }}
       with:
         host: ${{ env.HOST }} # 部署服务器地址
-        username: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
-        key: ${{ secrets.KEY_PRO }} # 部署服务器私钥
-        port: ${{ secrets.PORT_PRO }} # 部署服务器端口
-        script: |
-          cd ${{ env.ROOT_STATIC_PATH }}
-          tar -zxf ${{ env.DIST_NAME }}
-          rm -f ${{ env.DIST_NAME }}
-        
-  # 上传并部署主应用-测试环境
-  deploy-root-app-test:
-    if: ${{ github.ref_name == 'test' }}
-    # 依赖构建任务
-    needs: build-root-app
-    # 运行在 Ubuntu 上
-    runs-on: ubuntu-latest 
-    
-    # 步骤
-    steps:
-    # 下载资源
-    - name: Download Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: ${{ env.DIST_NAME }}
-
-    # 上传资源到部署服务器
-    - name: Upload Host
-      uses: easingthemes/ssh-deploy@main
-      env:
-        REMOTE_HOST: ${{ secrets.HOST_TEST }} # 部署服务器地址
-        REMOTE_USER: ${{ secrets.USERNAME_TEST }} # 部署服务器用户名
-        SSH_PRIVATE_KEY: ${{ secrets.KEY_TEST }} # 部署服务器私钥
-        ARGS: '-rltgoDzvO --delete'
-        SOURCE: ${{ env.DIST_NAME }} # Github Actions 压缩文件路径
-        TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
-
-    # 解压静态资源
-    - name: Deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST_TEST }} # 部署服务器地址
-        username: ${{ secrets.USERNAME_TEST }} # 部署服务器用户名
-        key: ${{ secrets.KEY_TEST }} # 部署服务器私钥
-        port: ${{ secrets.PORT_TEST }} # 部署服务器端口
-        script: |
-          cd ${{ env.ROOT_STATIC_PATH }}
-          tar -zxf ${{ env.DIST_NAME }}
-          rm -f ${{ env.DIST_NAME }}
-
-  # 上传并部署主应用-开发环境
-  deploy-root-app-dev:
-    if: ${{ github.ref_name == 'dev' }}
-    # 依赖构建任务
-    needs: build-root-app
-    # 运行在 Ubuntu 上
-    runs-on: ubuntu-latest 
-    
-    # 步骤
-    steps:
-    # 下载资源
-    - name: Download Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: ${{ env.DIST_NAME }}
-
-    # 上传资源到部署服务器
-    - name: Upload Host
-      uses: easingthemes/ssh-deploy@main
-      env:
-        REMOTE_HOST: ${{ secrets.HOST_DEV }} # 部署服务器地址
-        REMOTE_USER: ${{ secrets.USERNAME_DEV }} # 部署服务器用户名
-        SSH_PRIVATE_KEY: ${{ secrets.KEY_DEV }} # 部署服务器私钥
-        ARGS: '-rltgoDzvO --delete'
-        SOURCE: ${{ env.DIST_NAME }} # Github Actions 压缩文件路径
-        TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
-
-    # 解压静态资源
-    - name: Deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST_DEV }} # 部署服务器地址
-        username: ${{ secrets.USERNAME_DEV }} # 部署服务器用户名
-        key: ${{ secrets.KEY_DEV }} # 部署服务器私钥
-        port: ${{ secrets.PORT_DEV }} # 部署服务器端口
+        username: ${{ env.USERNAME }} # 部署服务器用户名
+        key: ${{ env.KEY }} # 部署服务器私钥
+        port: ${{ env.PORT_PRO }} # 部署服务器端口
         script: |
           cd ${{ env.ROOT_STATIC_PATH }}
           tar -zxf ${{ env.DIST_NAME }}
