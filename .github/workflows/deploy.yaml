@@ -70,16 +70,15 @@ jobs:
       id: get_secrets_name
       run: |
         value=HOST_${{ github.ref_name }}
-        echo "::set-output name=host::${value^^}"
+        echo "::set-output name=host::${{ secrets[${value^^}] }}"
 
     - run: |
         echo ${{ steps.get_secrets_name.outputs.host }}
-        echo ${{ secrets[steps.get_secrets_name.outputs.host] }}
     # 上传资源到部署服务器
     - name: Upload Host
       uses: easingthemes/ssh-deploy@main
       env:
-        REMOTE_HOST: ${{ secrets[steps.get_secrets_name.outputs.host] }} # 部署服务器地址
+        REMOTE_HOST: ${{ steps.get_secrets_name.outputs.host }} # 部署服务器地址
         REMOTE_USER: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
         SSH_PRIVATE_KEY: ${{ secrets.KEY_PRO }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
@@ -90,7 +89,7 @@ jobs:
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets[steps.get_secrets_name.outputs.host] }} # 部署服务器地址
+        host: ${{ steps.get_secrets_name.outputs.host }} # 部署服务器地址
         username: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
         key: ${{ secrets.KEY_PRO }} # 部署服务器私钥
         port: ${{ secrets.PORT_PRO }} # 部署服务器端口
