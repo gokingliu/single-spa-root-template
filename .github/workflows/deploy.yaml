@@ -8,7 +8,6 @@ on:
 # 环境变量
 env:
   ROOT_STATIC_PATH: /root/single_spa # 部署服务器，主应用资源路径
-  ROOT_PATH: single-spa-root-template # Github Actions 主应用代码路径
   DIST_NAME: dist-${{ github.run_number }}.zip # 压缩文件名称
   SOURCE_DIST: dist/dist-${{ github.run_number }}.zip # Github Actions 压缩文件路径
 
@@ -38,9 +37,13 @@ jobs:
         cd dist # 进入静态资源目录
         rm -f ${{ env.DIST_NAME }} # 删除之前存在的压缩文件
         zip -r ${{ env.DIST_NAME }} * # 压缩
-        echo '---------'
-        pwd
-        ls
+    
+    # 上传压缩资源，给其他任务使用
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.DIST_NAME }}
+        path: ${{ env.SOURCE_DIST }}
 
   # 上传并部署主应用-生产环境
   deploy-root-app:
@@ -51,17 +54,15 @@ jobs:
     
     # 步骤
     steps:
-    # SSH 前置准备
-    - name: Prepare SSH
-      run: |
-        mkdir -p ~/.ssh
-        touch ~/.ssh/known_hosts
-        ssh-keyscan -H '${{ secrets.HOST_PRO }}' >> ~/.ssh/known_hosts
-        echo '---------'
-        cat ~/.ssh/known_hosts
+    # 下载资源
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ env.DIST_NAME }}
+        path: ${{ env.SOURCE_DIST }}
 
     # 上传静态资源
-    - name: Upload
+    - name: Upload Host
       uses: easingthemes/ssh-deploy@main
       env:
         REMOTE_HOST: ${{ secrets.HOST_PRO }} # 部署服务器地址
