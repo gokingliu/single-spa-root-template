@@ -2,12 +2,13 @@ name: Deploy Single-Spa Root App
 
 # 触发条件
 on:
-  push: # master/release/dev 分支更新时
-    branches: [ 'master', 'release', 'dev' ]
+  workflow_dispatch: # 手动触发
+  push: # master/test/dev 分支更新时触发
+    branches: [ 'master', 'test', 'dev' ]
 
 # 环境变量
 env:
-  ROOT_STATIC_PATH: /root/single_spa # 部署服务器，主应用资源路径
+  ROOT_STATIC_PATH: /root/single_spa # 部署服务器的主应用资源路径
   DIST: dist # Github Actions 压缩文件路径
   DIST_NAME: dist-${{ github.run_number }}.zip # Github Actions 压缩文件名称
   SOURCE_DIST: dist/dist-${{ github.run_number }}.zip # Github Actions 压缩文件全路径
@@ -39,7 +40,7 @@ jobs:
         rm -f ${{ env.DIST_NAME }} # 删除之前存在的压缩文件
         zip -r ${{ env.DIST_NAME }} * # 压缩
     
-    # 上传压缩资源，给其他任务使用
+    # 上传资源，给其他任务使用
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
@@ -47,7 +48,8 @@ jobs:
         path: ${{ env.SOURCE_DIST }}
 
   # 上传并部署主应用-生产环境
-  deploy-root-app:
+  deploy-root-app-pro:
+    if: ${{ github.ref_name == 'master' }}
     # 依赖构建任务
     needs: build-root-app
     # 运行在 Ubuntu 上
@@ -62,7 +64,7 @@ jobs:
         name: ${{ env.DIST_NAME }}
         path: ${{ env.DIST }}
 
-    # 上传静态资源
+    # 上传资源到部署服务器
     - name: Upload Host
       uses: easingthemes/ssh-deploy@main
       env:
@@ -75,7 +77,6 @@ jobs:
 
     # 解压静态资源
     - name: Deploy
-      if: ${{ github.ref_name == 'master' }}
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST_PRO }} # 部署服务器地址
@@ -87,3 +88,84 @@ jobs:
           unzip ${{ env.DIST_NAME }}
           rm -f ${{ env.DIST_NAME }}
         
+  # 上传并部署主应用-测试环境
+  deploy-root-app-test:
+    if: ${{ github.ref_name == 'test' }}
+    # 依赖构建任务
+    needs: build-root-app
+    # 运行在 Ubuntu 上
+    runs-on: ubuntu-latest 
+    
+    # 步骤
+    steps:
+    # 下载资源
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ env.DIST_NAME }}
+        path: ${{ env.DIST }}
+
+    # 上传资源到部署服务器
+    - name: Upload Host
+      uses: easingthemes/ssh-deploy@main
+      env:
+        REMOTE_HOST: ${{ secrets.HOST_TEST }} # 部署服务器地址
+        REMOTE_USER: ${{ secrets.USERNAME_TEST }} # 部署服务器用户名
+        SSH_PRIVATE_KEY: ${{ secrets.KEY_TEST }} # 部署服务器私钥
+        ARGS: '-rltgoDzvO --delete'
+        SOURCE: ${{ env.SOURCE_DIST }} # Github Actions 压缩文件路径
+        TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
+
+    # 解压静态资源
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST_TEST }} # 部署服务器地址
+        username: ${{ secrets.USERNAME_TEST }} # 部署服务器用户名
+        key: ${{ secrets.KEY_TEST }} # 部署服务器私钥
+        port: ${{ secrets.PORT_TEST }} # 部署服务器端口
+        script: |
+          cd ${{ env.ROOT_STATIC_PATH }}
+          unzip ${{ env.DIST_NAME }}
+          rm -f ${{ env.DIST_NAME }}
+
+  # 上传并部署主应用-开发环境
+  deploy-root-app-dev:
+    if: ${{ github.ref_name == 'dev' }}
+    # 依赖构建任务
+    needs: build-root-app
+    # 运行在 Ubuntu 上
+    runs-on: ubuntu-latest 
+    
+    # 步骤
+    steps:
+    # 下载资源
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ env.DIST_NAME }}
+        path: ${{ env.DIST }}
+
+    # 上传资源到部署服务器
+    - name: Upload Host
+      uses: easingthemes/ssh-deploy@main
+      env:
+        REMOTE_HOST: ${{ secrets.HOST_DEV }} # 部署服务器地址
+        REMOTE_USER: ${{ secrets.USERNAME_DEV }} # 部署服务器用户名
+        SSH_PRIVATE_KEY: ${{ secrets.KEY_DEV }} # 部署服务器私钥
+        ARGS: '-rltgoDzvO --delete'
+        SOURCE: ${{ env.SOURCE_DIST }} # Github Actions 压缩文件路径
+        TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
+
+    # 解压静态资源
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST_DEV }} # 部署服务器地址
+        username: ${{ secrets.USERNAME_DEV }} # 部署服务器用户名
+        key: ${{ secrets.KEY_DEV }} # 部署服务器私钥
+        port: ${{ secrets.PORT_DEV }} # 部署服务器端口
+        script: |
+          cd ${{ env.ROOT_STATIC_PATH }}
+          unzip ${{ env.DIST_NAME }}
+          rm -f ${{ env.DIST_NAME }}
