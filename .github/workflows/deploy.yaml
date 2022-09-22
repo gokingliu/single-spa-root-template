@@ -38,6 +38,9 @@ jobs:
         cd dist # 进入静态资源目录
         rm -f ${{ env.DIST_NAME }} # 删除之前存在的压缩文件
         zip -r ${{ env.DIST_NAME }} * # 压缩
+        echo '---------'
+        pwd
+        ls
 
   # 上传并部署主应用-生产环境
   deploy-root-app:
