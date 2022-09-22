@@ -78,13 +78,12 @@ jobs:
     - name: Upload Host
       uses: easingthemes/ssh-deploy@main
       env:
-        REMOTE_HOST: ${{ HOST }} # 部署服务器地址
+        REMOTE_HOST: ${{ secrets[steps.get_secrets_name.outputs.host] }} # 部署服务器地址
         REMOTE_USER: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
         SSH_PRIVATE_KEY: ${{ secrets.KEY_PRO }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
         SOURCE: ${{ env.DIST_NAME }} # Github Actions 压缩文件路径
         TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
-        HOST: ${{ secrets[steps.get_secrets_name.outputs.host] }}
 
     # 解压静态资源
     - name: Deploy
