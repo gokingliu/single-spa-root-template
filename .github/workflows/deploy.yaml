@@ -69,8 +69,8 @@ jobs:
     - name: Get Secrets Name
       id: get_secrets_name
       run: |
-        value=HOST_${{ github.ref_name }}
-        echo "::set-output name=host::${{ secrets[${value^^}] }}"
+        declare -u upper="HOST_${{ github.ref_name }}"
+        echo "::set-output name=host::${{ secrets[$upper] }}"
 
     - run: |
         echo ${{ steps.get_secrets_name.outputs.host }}
