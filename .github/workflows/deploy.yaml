@@ -69,7 +69,7 @@ jobs:
     - name: Get Secrets Name
       id: get_secrets_name
       run: |
-        echo "::set-output name=host::echo HOST_${{ github.ref_name }} | tr a-z A-Z"
+        echo "::set-output name=host::HOST_${{ github.ref_name }} | tr a-z A-Z"
 
     - run: echo ${{ steps.get_secrets_name.outputs.host }}
     # 上传资源到部署服务器
