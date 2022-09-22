@@ -36,8 +36,8 @@ jobs:
         npm install # 安装 node modules
         npm run build # 打包
         cd dist # 进入静态资源目录
-        rm -f ${{ DIST_NAME }} # 删除之前存在的压缩文件
-        zip -r ${{ DIST_NAME }} * # 压缩
+        rm -f ${DIST_NAME} # 删除之前存在的压缩文件
+        zip -r ${DIST_NAME} * # 压缩
 
   # 上传并部署主应用-生产环境
   deploy-root-app:
