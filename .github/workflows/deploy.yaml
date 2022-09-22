@@ -90,7 +90,7 @@ jobs:
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST_PRO }} # 部署服务器地址
+        host: ${{ secrets[steps.get_secrets_name.outputs.host] }} # 部署服务器地址
         username: ${{ secrets.USERNAME_PRO }} # 部署服务器用户名
         key: ${{ secrets.KEY_PRO }} # 部署服务器私钥
         port: ${{ secrets.PORT_PRO }} # 部署服务器端口
