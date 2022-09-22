@@ -10,7 +10,7 @@ env:
   ROOT_STATIC_PATH: /root/single_spa # 部署服务器，主应用资源路径
   DIST: dist # Github Actions 压缩文件路径
   DIST_NAME: dist-${{ github.run_number }}.zip # Github Actions 压缩文件名称
-  SOURCE_DIST: ${{ env.DIST }}/${{ DIST_NAME }} # Github Actions 压缩文件全路径
+  SOURCE_DIST: ${{ DIST }}/${{ DIST_NAME }} # Github Actions 压缩文件全路径
 
 # 任务
 jobs:
