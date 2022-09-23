@@ -8,7 +8,7 @@ on:
 
 # 环境变量
 env:
-  ROOT_STATIC_PATH: /root/single_spa # 部署服务器的主应用资源路径
+  STATIC_PATH: /root/single_spa # 部署服务器的主应用资源路径
   DIST_NAME: dist-${{ github.run_number }}.tar # Github Actions 压缩文件名称
 
 # 任务
@@ -82,7 +82,7 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets[steps.secrets_name.outputs.key] }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
         SOURCE: ${{ env.DIST_NAME }} # Github Actions 压缩文件路径
-        TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
+        TARGET: ${{ env.STATIC_PATH }} # 部署服务器资源路径
 
     # 解压静态资源
     - name: Deploy
@@ -98,6 +98,6 @@ jobs:
         key: ${{ env.KEY }} # 部署服务器私钥
         port: ${{ env.PORT_PRO }} # 部署服务器端口
         script: |
-          cd ${{ env.ROOT_STATIC_PATH }}
+          cd ${{ env.STATIC_PATH }}
           tar -zxf ${{ env.DIST_NAME }}
           rm -f ${{ env.DIST_NAME }}
