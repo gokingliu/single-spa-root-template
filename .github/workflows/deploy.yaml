@@ -65,13 +65,13 @@ jobs:
       id: get_secrets_name
       run: |
         declare -u HOST='HOST_${{ github.ref_name }}' # 设置 HOST 变量
-        echo '::set-output name=host::${HOST}'  # 使用 outputs 将变量 host 传递给其他步骤
+        echo "::set-output name=host::${HOST}"  # 使用 outputs 将变量 host 传递给其他步骤
         declare -u USERNAME='USERNAME_${{ github.ref_name }}' # 设置 USERNAME 变量
-        echo '::set-output name=username::${USERNAME}'  # 使用 outputs 将变量 username 传递给其他步骤
+        echo "::set-output name=username::${USERNAME}"  # 使用 outputs 将变量 username 传递给其他步骤
         declare -u KEY='KEY_${{ github.ref_name }}' # 设置 KEY 变量
-        echo '::set-output name=key::${KEY}'  # 使用 outputs 将变量 key 传递给其他步骤
+        echo "::set-output name=key::${KEY}"  # 使用 outputs 将变量 key 传递给其他步骤
         declare -u PORT='PORT_${{ github.ref_name }}' # 设置 PORT 变量
-        echo '::set-output name=port::${PORT}'  # 使用 outputs 将变量 port 传递给其他步骤
+        echo "::set-output name=port::${PORT}"  # 使用 outputs 将变量 port 传递给其他步骤
 
     # 上传资源到部署服务器
     - name: Upload Host
