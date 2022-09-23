@@ -62,7 +62,7 @@ jobs:
 
     # 根据触发分支选择不同环境的 secrets name
     - name: Get Secrets Name
-      id: get_secrets_name
+      id: secrets_name
       run: |
         declare -u HOST='HOST_${{ github.ref_name }}' # 设置 HOST 变量
         echo "::set-output name=host::${HOST}"  # 使用 outputs 将变量 host 传递给其他步骤
@@ -77,9 +77,9 @@ jobs:
     - name: Upload Host
       uses: easingthemes/ssh-deploy@main
       env:
-        REMOTE_HOST: ${{ secrets[steps.get_secrets_name.outputs.host] }} # 部署服务器地址
-        REMOTE_USER: ${{ secrets[steps.get_secrets_name.outputs.username] }} # 部署服务器用户名
-        SSH_PRIVATE_KEY: ${{ secrets[steps.get_secrets_name.outputs.key] }} # 部署服务器私钥
+        REMOTE_HOST: ${{ secrets[steps.secrets_name.outputs.host] }} # 部署服务器地址
+        REMOTE_USER: ${{ secrets[steps.secrets_name.outputs.username] }} # 部署服务器用户名
+        SSH_PRIVATE_KEY: ${{ secrets[steps.secrets_name.outputs.key] }} # 部署服务器私钥
         ARGS: '-rltgoDzvO --delete'
         SOURCE: ${{ env.DIST_NAME }} # Github Actions 压缩文件路径
         TARGET: ${{ env.ROOT_STATIC_PATH }} # 部署服务器资源路径
@@ -88,10 +88,10 @@ jobs:
     - name: Deploy
       uses: appleboy/ssh-action@master
       env:
-        HOST: ${{ secrets[steps.get_secrets_name.outputs.host] }}
-        USERNAME: ${{ secrets[steps.get_secrets_name.outputs.username] }}
-        KEY: ${{ secrets[steps.get_secrets_name.outputs.key] }}
-        PORT: ${{ secrets[steps.get_secrets_name.outputs.port] }}
+        HOST: ${{ secrets[steps.secrets_name.outputs.host] }}
+        USERNAME: ${{ secrets[steps.secrets_name.outputs.username] }}
+        KEY: ${{ secrets[steps.secrets_name.outputs.key] }}
+        PORT: ${{ secrets[steps.secrets_name.outputs.port] }}
       with:
         host: ${{ env.HOST }} # 部署服务器地址
         username: ${{ env.USERNAME }} # 部署服务器用户名
